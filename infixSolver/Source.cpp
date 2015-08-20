@@ -156,22 +156,28 @@ struct node* parseExpression(string infix, struct node* root) {
 		}
 		if (isOperator(temp)) {	// Is it an operator? Then it depends on...
 			cout << "That was a " << temp << " operator... ";
+			bool control = false;
 
-			if (operators.empty()) {	// Is the operator stack empty?
-				cout << "The operator stack was empty - Push temp onto operators stack" << endl; 
-				operators.push(createNode(temp));	// Turn temp into a node and push it onto the operators stack
-			}
-			else if (operators.top()->val == ')') {	// Is the top of the stack a closing parenthesis ')'? 
-				cout << "Top of the operator stack was closing parenthesis ')'" << endl; 
-				operators.push(createNode(temp));	// Turn temp into a node and and push it onto the operator stack
-			}
-			else if (priority(operators.top()->val) <= priority(temp)) {	// Is the top of the stack the same or lower priority than this item? 
-				cout << "Priority of operator stack top <= temp" << endl; 
-				operators.push(createNode(temp));	// Turn temp into a node and push it onto the operator stack
-			}
-			else {	// Anything else - ie: the priority of the top of the operators stack was higher priority
-				cout << "We encountered something else - ie: the priority of .top() was higher than temp" << endl; 
-				insertOp(operators, treeNodes);	// we'll pop the top off the operator stack and insert it into the tree
+			while (!control) {
+				if (operators.empty()) {	// Is the operator stack empty?
+					cout << "The operator stack was empty - Push temp onto operators stack" << endl;
+					operators.push(createNode(temp));	// Turn temp into a node and push it onto the operators stack
+					control = true;
+				}
+				else if (operators.top()->val == ')') {	// Is the top of the stack a closing parenthesis ')'? 
+					cout << "Top of the operator stack was closing parenthesis ')'" << endl;
+					operators.push(createNode(temp));	// Turn temp into a node and and push it onto the operator stack
+					control = true;
+				}
+				else if (priority(operators.top()->val) <= priority(temp)) {	// Is the top of the stack the same or lower priority than this item? 
+					cout << "Priority of operator stack top <= temp" << endl;
+					operators.push(createNode(temp));	// Turn temp into a node and push it onto the operator stack
+					control = true;
+				}
+				else {	// Anything else - ie: the priority of the top of the operators stack was higher priority
+					cout << "We encountered something else - ie: the priority of .top() was higher than temp" << endl;
+					insertOp(operators, treeNodes);	// we'll pop the top off the operator stack and insert it into the tree - don't forget about temp! It wasn't pushed!
+				}
 			}
 		}
 
