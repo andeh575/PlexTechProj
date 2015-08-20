@@ -15,10 +15,11 @@ struct node {
 	node* right;
 };
 
-string getInfix(void);		// Helper function to get initial infix expression
-void pressToContinue();		// Helper function for console development
-bool isOperator(char m);	// Helper function for identifying mathematical operators	
-int priority(char m);		// Helper function to specify order of operations
+string getInfix(void);				// Helper function to get initial infix expression
+void pressToContinue();				// Helper function for console development
+bool isOperator(char m);			// Helper function for identifying mathematical operators	
+int priority(char m);				// Helper function to specify order of operations
+struct node* createNode(char m);	// Helper function to create a new node
 struct node* parseExpression(string m, struct node* root);	// Parse the input stack for insertion into the expression tree
 
 int main(void) {
@@ -75,6 +76,17 @@ int priority(char val) {
 	return p;
 }
 
+// Helper function to create a new node*
+struct node* createNode(char data) {
+	struct node* subNode = new node;
+
+	subNode->val = data;
+	subNode->left = NULL;
+	subNode->right = NULL;
+
+	return subNode;
+}
+
 // Parse the infix string for insertion into an expression tree
 struct node* parseExpression(string infix, struct node* root) {
 	char temp;				
@@ -91,32 +103,48 @@ struct node* parseExpression(string infix, struct node* root) {
 		temp = input.top();
 		input.pop();
 
-		if (isdigit(temp))	// Is it an operand? 
-			cout << "That was a digit" << endl; // Turn it into a node and push it onto the treeNode stack
-		if (temp == ')')	// Is it a closing parenthesis?
-			cout << "That was a closing parenthesis" << endl; // Turn it into a node and push it onto the operator stack
-		if (isOperator(temp)) { // Is it an operator? Then it depends on...
-			cout << "That was an operator" << endl;
+		if (isdigit(temp)) {	// Is it an operand? 
+			cout << "That was a digit - Push onto treeNodes stack" << endl; 
+			treeNodes.push(createNode(temp));	// Turn temp into a node and push it onto the treeNodes stack
+		}
+		if (temp == ')') {	// Is it a closing parenthesis ')'?
+			cout << "That was a closing parenthesis - Push onto operators stack" << endl; 
+			operators.push(createNode(temp));	// Turn temp into a node and push it onto the operators stack
+		}
+		if (isOperator(temp)) {	// Is it an operator? Then it depends on...
+			cout << "That was a " << temp << " operator... ";
 
-			if (operators.empty()) // Is the operator stack empty?
-				cout << "The operator stack was empty" << endl; // Turn it into a node and push it onto the operator stack
-
-			else if (operators.top()->val == ')') // Is the top of the stack a closing parenthesis ')'? 
-				cout << "Top of the operator stack was closing parenthesis ')'" << endl; // Turn it into a node and and push it onto the operator stack
-
-			else if (priority(operators.top()->val) <= priority(temp))// Is the top of the stack the same or lower priority than this item? 
-				cout << "Priority of operator stack top <= temp" << endl; // If so, make it a node and push it onto the operator stack
-
-			else// Anything else 
-				cout << "We encountered something else" << endl; // we'll pop the top off the operator stack and push it onto the treeNode stack
+			if (operators.empty()) {	// Is the operator stack empty?
+				cout << "The operator stack was empty - Push temp onto operators stack" << endl; 
+				operators.push(createNode(temp));	// Turn temp into a node and push it onto the operators stack
+			}
+			else if (operators.top()->val == ')') {	// Is the top of the stack a closing parenthesis ')'? 
+				cout << "Top of the operator stack was closing parenthesis ')'" << endl; 
+				operators.push(createNode(temp));	// Turn temp into a node and and push it onto the operator stack
+			}
+			else if (priority(operators.top()->val) <= priority(temp)) {	// Is the top of the stack the same or lower priority than this item? 
+				cout << "Priority of operator stack top <= temp" << endl; 
+				operators.push(createNode(temp));	// Turn temp into a node and push it onto the operator stack
+			}
+			else {	// Anything else - ie: the priority of the top of the operators stack was higher priority
+				cout << "We encountered something else - ie: the priority of .top() was higher than temp" << endl; 
+				// we'll pop the top off the operator stack and insert it into the tree
+			}
 		}
 
-		if (temp == '(')	// Is it an opening parenthesis '('? 
-			cout << "That was an opening parenthesis" << endl; // Then we've got to pop operators from the operator stack until we find a closing parenthesis ')' then discard them	
-		}
+		if (temp == '(') {	// Is it an opening parenthesis '('? 
+			cout << "That was an opening parenthesis" << endl;
+			while (operators.top()->val != ')') {	// Pop operators from the operator stack until we find a closing parenthesis ')'
+				// Insert operators into the tree
+			}
 
-	while (!operators.empty()) {
-		cout << "Emptying the operator stack here" << endl; // The input stack should now be empty so let's unstack the unused operators from the operator stack
+			operators.pop(); // Discard the connecting ')'
+		}
+	}
+
+	while (!operators.empty()) {	// The input stack should now be empty
+		cout << "Emptying the operator stack here" << endl; 
+		// Unstack the waiting operators from the operator stack and insert them into the tree
 	}
 
 	cout << endl << "All parsed - sending root back to caller" << endl;
