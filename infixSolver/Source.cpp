@@ -20,7 +20,8 @@ void pressToContinue();				// Helper function for console development
 bool isOperator(char m);			// Helper function for identifying mathematical operators	
 int priority(char m);				// Helper function to specify order of operations
 struct node* createNode(char m);	// Helper function to create a new node
-struct node* parseExpression(string m, struct node* root);	// Parse the input stack for insertion into the expression tree
+void insertOp(stack<node*>& operators, stack<node*>& treeNodes);	// Build a tree node with an operator and two children
+struct node* parseExpression(string m, struct node* root);			// Parse the input stack for insertion into the expression tree
 
 int main(void) {
 	string infix;					// Input string
@@ -87,6 +88,26 @@ struct node* createNode(char data) {
 	return subNode;
 }
 
+/*	Build a tree node with an operator and two children.
+/	Valid children are: 
+/		- Two Operands (ie: 1 and 2) - Can be leafs
+/		- Two Operators (ie: + and *) - Need to have subtrees of their own
+/		- An Operator and an Operand (ie: 1 and +) - Operand is a leaf and Operators have subtrees of their own
+*/
+void insertOp(stack<node*>& operators, stack<node*>& treeNodes) {
+	node* opNode = operators.top();	// Take the first operator from the operators stack
+	operators.pop();
+
+	// Take first two items off of the treeNodes stack and make them the opNode's children - left precedence
+	opNode->left = treeNodes.top();
+	treeNodes.pop();
+	opNode->right = treeNodes.top();
+	treeNodes.pop();
+
+	// Push the newly created tree on top of the treeNodes stack
+	treeNodes.push(opNode);
+}
+
 // Parse the infix string for insertion into an expression tree
 struct node* parseExpression(string infix, struct node* root) {
 	char temp;				
@@ -128,14 +149,14 @@ struct node* parseExpression(string infix, struct node* root) {
 			}
 			else {	// Anything else - ie: the priority of the top of the operators stack was higher priority
 				cout << "We encountered something else - ie: the priority of .top() was higher than temp" << endl; 
-				// we'll pop the top off the operator stack and insert it into the tree
+				insertOp(operators, treeNodes);	// we'll pop the top off the operator stack and insert it into the tree
 			}
 		}
 
 		if (temp == '(') {	// Is it an opening parenthesis '('? 
 			cout << "That was an opening parenthesis" << endl;
 			while (operators.top()->val != ')') {	// Pop operators from the operator stack until we find a closing parenthesis ')'
-				// Insert operators into the tree
+				insertOp(operators, treeNodes);	// Insert operators into the tree
 			}
 
 			operators.pop(); // Discard the connecting ')'
@@ -144,8 +165,11 @@ struct node* parseExpression(string infix, struct node* root) {
 
 	while (!operators.empty()) {	// The input stack should now be empty
 		cout << "Emptying the operator stack here" << endl; 
-		// Unstack the waiting operators from the operator stack and insert them into the tree
+		insertOp(operators, treeNodes);	// Unstack the waiting operators from the operator stack and insert them into the tree
 	}
+
+	// Assign the top of the treeNodes stack to the root and return to the caller
+	root = treeNodes.top();
 
 	cout << endl << "All parsed - sending root back to caller" << endl;
 	return root;
