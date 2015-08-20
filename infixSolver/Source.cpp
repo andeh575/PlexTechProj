@@ -25,14 +25,18 @@ void pressToContinue();				// Helper function for console development
 bool isOperator(char m);			// Helper function for identifying mathematical operators	
 int priority(char m);				// Helper function to specify order of operations
 struct node* createNode(char m);	// Helper function to create a new node
+
 void insertOp(stack<node*>& operators, stack<node*>& treeNodes);	// Build a tree node with an operator and two children
 struct node* parseExpression(string m, struct node* root);			// Parse the input stack for insertion into the expression tree
+int evaluate(struct node* node);									// Recursively calculate the value of the expression tree
+
 void preOrder(struct node* node);	// Test function: Preorder Traversal - Recursively defined
 void inOrder(struct node* node);	// Test function: Inorder Traversal - Recursively defined
 void postOrder(struct node* node);	// Test Function: Postorder Traversal - Recursively defined
 
 int main(void) {
-	string infix;					// Input string
+	string infix;	// Input string
+	int solution;	// Solution to the expression tree
 	struct node* root = new node;	// The root of the expression tree
 
 	cout << "Welcome to a Simple Infix Equation Solver" << endl;
@@ -52,8 +56,9 @@ int main(void) {
 	postOrder(root);
 
 	// Solve the equation
+	solution = evaluate(root);
+	cout << endl << "The solution to the expression is: " << solution << endl;
 
-	pressToContinue();
 	pressToContinue();
 	return 0;
 }
@@ -71,8 +76,7 @@ string getInfix(void) {
 
 // Helper function for console development
 void pressToContinue(void) {
-	cout << endl << "Press ENTER to continue..." << flush;
-	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	system("PAUSE");
 }
 
 // Helper function for identifying operators
@@ -191,6 +195,27 @@ struct node* parseExpression(string infix, struct node* root) {
 
 	cout << endl << "All parsed - sending root back to caller" << endl;
 	return root;
+}
+
+// Recursively calculate the value of the expression tree
+int evaluate(struct node* node) {
+	int x, y, z;
+
+	// The node contains an operator
+	if (node->val == '+' || node->val == '*') {
+		x = evaluate(node->left);
+		y = evaluate(node->right);
+
+		if (node->val == '+')
+			z = x + y;
+		else if (node->val == '*')
+			z = x * y;
+		
+		return z;
+	}
+	// The node contains an operand
+	else
+		return(node->val - '0'); 
 }
 
 /*	Test Function: Preorder Traversal - Should print prefix notation
