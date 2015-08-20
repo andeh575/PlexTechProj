@@ -2,6 +2,11 @@
 /	Date:		20 August 2015
 /	Purpose:	Solves simple mathematetical expressions - program accepts expressions in infix notation, converts them to postfix, 
 /				and assembles them into a binary expression tree for solving. 
+/
+/	Requirements/Assumptions:	
+/		- Input expressions are in infix notation
+/		- Input operands are single-digit
+/		- Input operations are addition: '+', and multiplication: '*'
 */
 
 #include <iostream>
@@ -22,6 +27,9 @@ int priority(char m);				// Helper function to specify order of operations
 struct node* createNode(char m);	// Helper function to create a new node
 void insertOp(stack<node*>& operators, stack<node*>& treeNodes);	// Build a tree node with an operator and two children
 struct node* parseExpression(string m, struct node* root);			// Parse the input stack for insertion into the expression tree
+void preOrder(struct node* node);	// Test function: Preorder Traversal - Recursively defined
+void inOrder(struct node* node);	// Test function: Inorder Traversal - Recursively defined
+void postOrder(struct node* node);	// Test Function: Postorder Traversal - Recursively defined
 
 int main(void) {
 	string infix;					// Input string
@@ -32,6 +40,16 @@ int main(void) {
 	// Parsing the input stack for insertion onto the expression tree
 	infix = getInfix();
 	root = parseExpression(infix, root);
+
+	// Test for proper tree structure and printing
+	cout << endl << "Preorder Traversal: ";
+	preOrder(root);
+
+	cout << endl << "Inorder Traversal: ";
+	inOrder(root);
+
+	cout << endl << "Postorder Traversal: ";
+	postOrder(root);
 
 	// Solve the equation
 
@@ -88,7 +106,7 @@ struct node* createNode(char data) {
 	return subNode;
 }
 
-/*	Build a tree node with an operator and two children.
+/*	Build a tree node with an operator and two children - Push onto treeNodes stack.
 /	Valid children are: 
 /		- Two Operands (ie: 1 and 2) - Can be leafs
 /		- Two Operators (ie: + and *) - Need to have subtrees of their own
@@ -173,4 +191,37 @@ struct node* parseExpression(string infix, struct node* root) {
 
 	cout << endl << "All parsed - sending root back to caller" << endl;
 	return root;
+}
+
+/*	Test Function: Preorder Traversal - Should print prefix notation
+/	Reminder -- Preorder traversal: Root -> Left Child -> Right Child
+*/
+void preOrder(struct node* node) {
+	if (node != NULL) {
+		cout << node->val << " ";
+		preOrder(node->left);
+		preOrder(node->right);
+	}
+}
+
+/*	Test Function: Inorder Traversal - Should print infix notation
+/	Reminder -- Inorder traversal: Left Child -> Root -> Right Child
+*/
+void inOrder(struct node* node) {
+	if (node != NULL) {
+		inOrder(node->left);
+		cout << node->val << " ";
+		inOrder(node->right);
+	}
+}
+
+/*	Test Function: Postorder Traversal - Should print postfix notation
+/	Reminder -- Postorder traversal: Left Child -> Right Child -> Root
+*/
+void postOrder(struct node* node) {
+	if (node != NULL) {
+		postOrder(node->left);
+		postOrder(node->right);
+		cout << node->val << " ";
+	}
 }
