@@ -12,7 +12,6 @@
 #include <iostream>
 #include <string>
 #include <stack>
-#include "ExpressionTree.h"
 using namespace std;
 
 class Node {
@@ -27,45 +26,26 @@ class Node {
 			right = NULL;
 		}
 
-		char value() {
-			return val;
-		}
+		char value() { return val; }
 		
-		Node* getLeft() {
-			return left;
-		}
+		Node* getLeft() { return left; }
 
-		void setLeft(Node* data) {
-			left = data;
-		}
+		void setLeft(Node* data) { left = data; }
 
-		Node* getRight() {
-			return right;
-		}
+		Node* getRight() { return right; }
 
-		void setRight(Node* data) {
-			right = data;
-		}
-		 
+		void setRight(Node* data) { right = data; }
+
 }; // End class Node
-
-/*
-struct node {
-	char val;
-	node* left;
-	node* right;
-};*/
 
 string getInfix(void);		// Helper function to get initial infix expression
 void pressToContinue();		// Helper function for console development
-
 bool isOperator(char m);	// Helper function for identifying mathematical operators	
 int priority(char m);		// Helper function to specify order of operations
 Node* createNode(char m);	// Helper function to create a new node
 void insertOp(stack<Node*>& operators, stack<Node*>& treeNodes);	// Build a tree node with an operator and two children
-Node* parseExpression(string m, Node* root);			// Parse the input stack for insertion into the expression tree
-int evaluate(Node* node);									// Recursively calculate the value of the expression tree
-
+Node* parseExpression(string m, Node* root);	// Parse the input stack for insertion into the expression tree
+int evaluate(Node* node);						// Recursively calculate the value of the expression tree
 void preOrder(Node* node);	// Test function: Preorder Traversal - Recursively defined
 void inOrder(Node* node);	// Test function: Inorder Traversal - Recursively defined
 void postOrder(Node* node);	// Test Function: Postorder Traversal - Recursively defined
@@ -109,10 +89,6 @@ int priority(char val) {
 // Helper function to create a new node*
 Node* createNode(char data) {
 	Node* subNode = new Node(data);
-
-	//subNode->val = data;
-	//subNode->left = NULL;
-	//subNode->right = NULL;
 
 	return subNode;
 }
