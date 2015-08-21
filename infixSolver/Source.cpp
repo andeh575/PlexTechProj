@@ -86,14 +86,14 @@ int priority(char val) {
 	return p;
 }
 
-// Helper function to create a new node*
+// Helper function to create a new Node*
 Node* createNode(char data) {
 	Node* subNode = new Node(data);
 
 	return subNode;
 }
 
-/*	Build a tree node with an operator and two children - Push onto treeNodes stack.
+/*	Build a tree Node* with an operator and two children - Push onto treeNodes stack.
 /	Valid children are: 
 /		- Two Operands (ie: 1 and 2) - Can be leafs
 /		- Two Operators (ie: + and *) - Need to have subtrees of their own
@@ -130,25 +130,25 @@ Node* parseExpression(string infix, Node* root) {
 		input.pop();
 
 		if (isdigit(temp)) {	// Is it an operand? 
-			treeNodes.push(createNode(temp));	// Turn temp into a node and push it onto the treeNodes stack
+			treeNodes.push(createNode(temp));	// Turn temp into a Node* and push it onto the treeNodes stack
 		}
 		if (temp == ')') {	// Is it a closing parenthesis ')'?
-			operators.push(createNode(temp));	// Turn temp into a node and push it onto the operators stack
+			operators.push(createNode(temp));	// Turn temp into a Node* and push it onto the operators stack
 		}
 		if (isOperator(temp)) {	// Is it an operator? Then it depends on...
 			bool control = false;	// Prevents operators from getting lost in the event that the top of the operator stack has a higher priority than temp
 
 			while (!control) {
 				if (operators.empty()) {	// Is the operator stack empty?
-					operators.push(createNode(temp));	// Turn temp into a node and push it onto the operators stack
+					operators.push(createNode(temp));	// Turn temp into a Node* and push it onto the operators stack
 					control = true;
 				}
 				else if (operators.top()->value() == ')') {	// Is the top of the stack a closing parenthesis ')'? 
-					operators.push(createNode(temp));	// Turn temp into a node and and push it onto the operator stack
+					operators.push(createNode(temp));	// Turn temp into a Node* and and push it onto the operator stack
 					control = true;
 				}
 				else if (priority(operators.top()->value()) <= priority(temp)) {	// Is the top of the stack the same or lower priority than this item? 
-					operators.push(createNode(temp));	// Turn temp into a node and push it onto the operator stack
+					operators.push(createNode(temp));	// Turn temp into a Node* and push it onto the operator stack
 					control = true;
 				}
 				else {	// Anything else - ie: the priority of the top of the operators stack was higher priority
@@ -170,7 +170,7 @@ Node* parseExpression(string infix, Node* root) {
 		insertOp(operators, treeNodes);	// Unstack the waiting operators from the operator stack and insert them into the tree
 	}
 
-	// Assign the top of the treeNodes stack to the root and return to the caller
+	// Assign the top of the treeNodes stack, which is a Node*, to the root and return to the caller
 	root = treeNodes.top();
 
 	return root;
@@ -241,6 +241,7 @@ int main(void) {
 	infix = getInfix();
 	root = parseExpression(infix, root);
 
+	/* Uncomment to view results of tree traversal
 	// Test for proper tree structure and printing
 	cout << endl << "Preorder Traversal: ";
 	preOrder(root);
@@ -249,7 +250,8 @@ int main(void) {
 	inOrder(root);
 
 	cout << endl << "Postorder Traversal: ";
-	postOrder(root);
+	postOrder(root); 
+	*/
 
 	// Solve the equation
 	solution = evaluate(root);
